@@ -10,7 +10,7 @@ export class ScraperService {
     constructor(private readonly page: PageService) {}
 
     async fetchProductListings(nutrition?: string, nova?: string) {
-        const url = composeUrl(nutrition, nova);
+        const url = composeUrl({ nutrition, nova });
         try {
             const currentPage = await this.page.visit(url);
             Logger.debug(

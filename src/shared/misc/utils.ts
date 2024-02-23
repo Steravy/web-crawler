@@ -4,7 +4,7 @@
 
 import { ElementHandle } from 'puppeteer';
 import { Extractor } from './extractor';
-import { NutritionAndNovaDetails } from './types';
+import { NutritionAndNovaDetails, UrlComposeParams } from './types';
 
 export const extractIdFromUrl = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
@@ -50,14 +50,54 @@ export const getNutritionAndNovaDetails = async (
     return { nutrition, nova };
 };
 
-export const composeUrl = (nutrition?: string, nova?: string): string => {
-    const baseUrl = 'https://br.openfoodfacts.org/products';
+export const extractTitleAndQuantity = async (
+    htmlElement: ElementHandle<Element>,
+) => {
+    const titleElement = await htmlElement.$(
+        '#product > div > div > div.card-section > div > div.medium-8.small-12.columns > h2',
+    );
+    const title = await titleElement.evaluate((el) => el.textContent.trim());
+    const quantityElement = await htmlElement.$('#field_quantity_value');
+    const quantity = await quantityElement.evaluate((el) =>
+        el.textContent.trim(),
+    );
+
+    console.log(title, quantity);
+};
+
+export const extractIngredients = async (
+    htmlElement: ElementHandle<Element>,
+) => {
+    const ingredientsPanelElement = await htmlElement.$(
+        '#panel_ingredients_content > div:nth-child(1) > div > div',
+    );
+    // const panel = await htmlElement.$('#panel_ingredients_content');
+    // const hasPalmOil =
+
+    // const list = await ingredientsPanelElement.evaluate((el) =>
+    //     el.innerHTML.trim(),
+    // );
+    // console.log(list);
+};
+
+export const composeUrl = (params: UrlComposeParams): string => {
+    const { productId, nutrition, nova } = params;
+    const baseUrl = 'https://br.openfoodfacts.org';
+
+    if (productId) {
+        const url = `${baseUrl}/produto/${productId}`;
+        console.log(url, 'PRODUCT URL');
+        return url;
+    }
+
+    console.log('COMPOSE URL', productId);
+
     const searchParams = new URLSearchParams({
         ...(nutrition && { nutrition }),
         ...(nova && { nova }),
     });
     if (!searchParams.has('nutrition') || !searchParams.has('nova'))
-        return baseUrl;
+        return `${baseUrl}/products`;
     const composedUrl = `${baseUrl}?${searchParams}`;
     console.log(composedUrl);
     return composedUrl;

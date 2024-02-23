@@ -18,3 +18,9 @@ export type NutritionAndNovaDetails = {
     nutrition: Score;
     nova: Score;
 };
+
+export type UrlComposeParams = {
+    nutrition?: string;
+    nova?: string;
+    productId?: string;
+};

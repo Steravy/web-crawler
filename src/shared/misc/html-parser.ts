@@ -9,11 +9,17 @@ import {
     getNutritionAndNovaDetails,
 } from './utils';
 import { ElementHandle } from 'puppeteer';
+import { Logger } from '@nestjs/common';
 
 export abstract class HtmlParser {
+    static LOGGER_LABEL: string;
     static async execute(
         htmlElements: ElementHandle<Element>,
     ): Promise<ProductListingDetails[]> {
+        Logger.debug(
+            'HTML PARSING PROCESS INITIALIZED',
+            HtmlParser.LOGGER_LABEL,
+        );
         const listItemsHtmlElements = await htmlElements.$$('li');
         const products: ProductListingDetails[] = [];
 
@@ -33,6 +39,7 @@ export abstract class HtmlParser {
                 nova,
             });
         }
+        Logger.debug('HTML PARSING PROCESS FINISHED', HtmlParser.LOGGER_LABEL);
 
         console.warn(listItemsHtmlElements.length, 'TOTAL');
         return products;
