@@ -7,14 +7,14 @@ export class PageService {
     private readonly browser: Promise<Browser>;
 
     constructor() {
-        this.browser = puppeteer.launch();
+        this.browser = puppeteer.launch({ headless: false });
     }
 
     async visit(url: string): Promise<Page> {
         const browser = await this.browser;
         const page = await browser.newPage();
         page.setDefaultNavigationTimeout(2 * 60 * 1000);
-        await page.waitForNavigation();
+        // await page.waitForNavigation();
         await page.goto(url);
         return page;
     }

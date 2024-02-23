@@ -1,6 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PageService } from '../../page/page.service';
-import { Extractor } from '../../shared/misc/extractor';
+import { ProductListingDetails } from '../../shared/misc/types';
+import {
+    composeUrl,
+    extractIdFromUrl,
+    getNameFormHtmlElement,
+    getNutritionAndNovaDetails,
+} from '../../shared/misc/utils';
+import { ElementHandle } from 'puppeteer';
 
 @Injectable()
 export class ScraperService {
@@ -8,72 +15,25 @@ export class ScraperService {
 
     constructor(private readonly page: PageService) {}
 
-    async run() {
+    async run(nutrition?: string, nova?: string) {
+        const url = composeUrl(nutrition, nova);
         try {
-            Logger.debug('Trying to srcape.', this.LOGGER_LABEL);
-            const currentPage = await this.page.visit(
-                'https://br.openfoodfacts.org',
+            Logger.debug('ACCESSING THE WEB PAGE', this.LOGGER_LABEL);
+            const currentPage = await this.page.visit(url);
+            Logger.debug(
+                'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
+                this.LOGGER_LABEL,
             );
 
             const selector = '#products_match_all';
+            await currentPage.waitForSelector(selector, { visible: true });
 
-            Logger.debug(`The selector is ${selector}`, this.LOGGER_LABEL);
-            Logger.debug('Waiting for selector.', this.LOGGER_LABEL);
-            await currentPage.waitForSelector(selector);
-
-            Logger.debug('FOUND SELECTOR', this.LOGGER_LABEL);
             const elements = await currentPage.$(selector);
 
-            const liHtmlElements = await elements.$$('li');
-            const products = [];
+            Logger.debug('HTML ELEMENTS FOUND IN THE PAGE', this.LOGGER_LABEL);
 
-            for (let i = 0; i < liHtmlElements.length; i++) {
-                const li = liHtmlElements[i];
-
-                const productNameElement = await li.$('.list_product_name');
-                const productLink = await li.$('.list_product_a');
-                const url = await productLink.evaluate((el) =>
-                    el.getAttribute('href'),
-                );
-                // const id = this.extractProductIdFromUrl(url);
-                const id = Extractor.productId(url);
-                const productName = productNameElement
-                    ? await productNameElement.evaluate((el) =>
-                        el.textContent.trim(),
-                      )
-                    : '';
-
-                const nutriScoreElements = await li.$$('.list_product_icons');
-
-                const nutriScore = await nutriScoreElements[0].evaluate((el) =>
-                    el.getAttribute('title'),
-                );
-                console.log(nutriScore, 'NUTRI');
-                // const nutrition = this.extractNutriScoreInfo(nutriScore);
-                const nutrition = Extractor.nutriScore(nutriScore);
-
-                const novaScore = await nutriScoreElements[1].evaluate((el) =>
-                    el.getAttribute('title'),
-                );
-                console.log(novaScore, 'NOVA');
-                // const nova = this.extractNOVAScoreInfo(novaScore);
-                const nova = Extractor.novaScore(novaScore);
-
-                products.push({
-                    id: id,
-                    name: productName,
-                    nutrition: {
-                        score: nutrition.score,
-                        title: nutrition.title,
-                    },
-                    nova: {
-                        score: nova.score,
-                        title: nova.title,
-                    },
-                });
-            }
-            // console.warn(products, 'ALL PRODUCTS');
-            console.warn(liHtmlElements.length, 'TOTAL');
+            const products =
+                await this.parseHtmlElementAndReturnValues(elements);
 
             console.log(products);
         } catch (error) {
@@ -82,5 +42,32 @@ export class ScraperService {
             // if (browser) await browser.close();
             await this.page.closeInstance();
         }
+    }
+
+    private async parseHtmlElementAndReturnValues(
+        htmlElements: ElementHandle<Element>,
+    ): Promise<ProductListingDetails[]> {
+        const listItemsHtmlElements = await htmlElements.$$('li');
+        const products: ProductListingDetails[] = [];
+
+        for (let i = 0; i < listItemsHtmlElements.length; i++) {
+            const listItemHtmlElement = listItemsHtmlElements[i];
+
+            const id = await extractIdFromUrl(listItemHtmlElement);
+            const name = await getNameFormHtmlElement(listItemHtmlElement);
+
+            const { nova, nutrition } =
+                await getNutritionAndNovaDetails(listItemHtmlElement);
+
+            products.push({
+                id,
+                name,
+                nutrition,
+                nova,
+            });
+        }
+
+        console.warn(listItemsHtmlElements.length, 'TOTAL');
+        return products;
     }
 }
