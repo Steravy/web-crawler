@@ -9,6 +9,7 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    "prettier"
   ],
   root: true,
   env: {
@@ -28,6 +29,7 @@ module.exports = {
         "avoidEscape": true,
         "allowTemplateLiterals": true
       }
-    ]
+    ],
+    indent: ['error', 4]
   },
 };
