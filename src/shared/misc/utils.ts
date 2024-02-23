@@ -13,7 +13,6 @@ export const extractIdFromUrl = async (
     const url = await productLinkElement.evaluate((el) =>
         el.getAttribute('href'),
     );
-    // const id = this.extractProductIdFromUrl(url);
     return Extractor.productId(url);
 };
 
@@ -51,7 +50,7 @@ export const getNutritionAndNovaDetails = async (
     return { nutrition, nova };
 };
 
-export const composeUrl = (nutrition?: string, nova?: string) => {
+export const composeUrl = (nutrition?: string, nova?: string): string => {
     const baseUrl = 'https://br.openfoodfacts.org/products';
     const searchParams = new URLSearchParams({
         ...(nutrition && { nutrition }),

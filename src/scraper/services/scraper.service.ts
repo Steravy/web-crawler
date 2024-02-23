@@ -1,13 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PageService } from '../../page/page.service';
-import { ProductListingDetails } from '../../shared/misc/types';
-import {
-    composeUrl,
-    extractIdFromUrl,
-    getNameFormHtmlElement,
-    getNutritionAndNovaDetails,
-} from '../../shared/misc/utils';
-import { ElementHandle } from 'puppeteer';
+import { composeUrl } from '../../shared/misc/utils';
+import { HtmlParser } from '../../shared/misc/html-parser';
 
 @Injectable()
 export class ScraperService {
@@ -15,10 +9,9 @@ export class ScraperService {
 
     constructor(private readonly page: PageService) {}
 
-    async run(nutrition?: string, nova?: string) {
+    async fetchProductListings(nutrition?: string, nova?: string) {
         const url = composeUrl(nutrition, nova);
         try {
-            Logger.debug('ACCESSING THE WEB PAGE', this.LOGGER_LABEL);
             const currentPage = await this.page.visit(url);
             Logger.debug(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
@@ -32,8 +25,7 @@ export class ScraperService {
 
             Logger.debug('HTML ELEMENTS FOUND IN THE PAGE', this.LOGGER_LABEL);
 
-            const products =
-                await this.parseHtmlElementAndReturnValues(elements);
+            const products = await HtmlParser.execute(elements);
 
             console.log(products);
         } catch (error) {
@@ -42,32 +34,5 @@ export class ScraperService {
             // if (browser) await browser.close();
             await this.page.closeInstance();
         }
-    }
-
-    private async parseHtmlElementAndReturnValues(
-        htmlElements: ElementHandle<Element>,
-    ): Promise<ProductListingDetails[]> {
-        const listItemsHtmlElements = await htmlElements.$$('li');
-        const products: ProductListingDetails[] = [];
-
-        for (let i = 0; i < listItemsHtmlElements.length; i++) {
-            const listItemHtmlElement = listItemsHtmlElements[i];
-
-            const id = await extractIdFromUrl(listItemHtmlElement);
-            const name = await getNameFormHtmlElement(listItemHtmlElement);
-
-            const { nova, nutrition } =
-                await getNutritionAndNovaDetails(listItemHtmlElement);
-
-            products.push({
-                id,
-                name,
-                nutrition,
-                nova,
-            });
-        }
-
-        console.warn(listItemsHtmlElements.length, 'TOTAL');
-        return products;
     }
 }

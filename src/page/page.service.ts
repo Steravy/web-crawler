@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import puppeteer, { Browser, Page } from 'puppeteer';
 
 @Injectable()
@@ -7,14 +7,17 @@ export class PageService {
     private readonly browser: Promise<Browser>;
 
     constructor() {
-        this.browser = puppeteer.launch({ headless: false });
+        this.browser = puppeteer.launch();
     }
 
     async visit(url: string): Promise<Page> {
+        Logger.debug('INITIALIZING HEADLESS BROWSER', this.LOGGER_LABEL);
         const browser = await this.browser;
         const page = await browser.newPage();
+        Logger.debug('BROWSER INSTANCE LAUCHED', this.LOGGER_LABEL);
         page.setDefaultNavigationTimeout(2 * 60 * 1000);
         // await page.waitForNavigation();
+        Logger.debug('ACCESSING THE WEB PAGE', this.LOGGER_LABEL);
         await page.goto(url);
         return page;
     }

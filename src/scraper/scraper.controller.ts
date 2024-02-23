@@ -8,6 +8,6 @@ export class ScraperController {
     @Get()
     scrape(@Query('nutrition') nutrition: string, @Query('nova') nova: string) {
         console.log(nutrition, nova);
-        this.scraper.run(nutrition, nova);
+        this.scraper.fetchProductListings(nutrition, nova);
     }
 }
