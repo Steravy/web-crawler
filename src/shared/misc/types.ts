@@ -24,3 +24,18 @@ export type UrlComposeParams = {
     nova?: string;
     productId?: string;
 };
+
+export enum NutritionScores {
+    A = 'A',
+    B = 'B',
+    C = 'C',
+    D = 'D',
+    E = 'E',
+}
+
+export enum NovaScores {
+    ONE = 1,
+    TWO,
+    TREE,
+    FOUR,
+}
