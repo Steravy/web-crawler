@@ -8,7 +8,6 @@ export abstract class Extractor {
         try {
             // Parse the URL
             const parsedUrl = new URL(productUrl);
-            console.log(parsedUrl, 'PARSED URL');
 
             // Extract the product ID from the pathname
             const pathnameParts = parsedUrl.pathname.split('/');

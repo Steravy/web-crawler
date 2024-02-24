@@ -12,14 +12,14 @@ import { ProductListingResponse } from './dto/product-listing-response.dto';
 import { NovaScores, NutritionScores } from '../shared/misc/types';
 
 @ApiTags('Scraper')
-@Controller('scraper')
+@Controller('products')
 export class ScraperController {
     constructor(
         private readonly scraper: ScraperService,
         private readonly productDetailScraper: ScraperProductService,
     ) {}
 
-    @Get('products')
+    @Get()
     @ApiQuery({ name: 'nutrition', enum: NutritionScores })
     @ApiQuery({ name: 'nova', enum: NovaScores })
     @ApiOkResponse({
@@ -33,9 +33,11 @@ export class ScraperController {
         description:
             'Something is wrong with the request you have made. Probably you missed or provided wrong values on the url query segment.',
     })
-    scrape(@Query('nutrition') nutrition: string, @Query('nova') nova: string) {
-        console.log(nutrition, nova);
-        this.scraper.fetchProductListings(nutrition, nova);
+    products(
+        @Query('nutrition') nutrition: string,
+        @Query('nova') nova: string,
+    ) {
+        return this.scraper.fetchProductListings(nutrition, nova);
     }
 
     @Get(':id')

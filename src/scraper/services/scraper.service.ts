@@ -28,6 +28,7 @@ export class ScraperService {
             const products = await HtmlParser.execute(elements);
 
             console.log(products);
+            return products;
         } catch (error) {
             console.error('Error: ', error);
         } finally {

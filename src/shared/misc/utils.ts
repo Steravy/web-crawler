@@ -36,12 +36,12 @@ export const getNutritionAndNovaDetails = async (
     const nutriScore = await nutriAndNovaScoreElements[0].evaluate((el) =>
         el.getAttribute('title'),
     );
-    console.log(nutriScore, 'NUTRI');
+    // console.log(nutriScore, 'NUTRI');
 
     const novaScore = await nutriAndNovaScoreElements[1].evaluate((el) =>
         el.getAttribute('title'),
     );
-    console.log(novaScore, 'NOVA');
+    // console.log(novaScore, 'NOVA');
 
     const nutrition = Extractor.nutriScore(nutriScore);
 
@@ -89,8 +89,6 @@ export const composeUrl = (params: UrlComposeParams): string => {
         console.log(url, 'PRODUCT URL');
         return url;
     }
-
-    console.log('COMPOSE URL', productId);
 
     const searchParams = new URLSearchParams({
         ...(nutrition && { nutrition }),
