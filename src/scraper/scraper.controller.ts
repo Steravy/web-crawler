@@ -34,8 +34,8 @@ export class ScraperController {
             'Something is wrong with the request you have made. Probably you missed or provided wrong values on the url query segment.',
     })
     products(
-        @Query('nutrition') nutrition: string,
-        @Query('nova') nova: string,
+        @Query('nutrition') nutrition: NutritionScores,
+        @Query('nova') nova: NovaScores,
     ) {
         return this.scraper.fetchProductListings(nutrition, nova);
     }

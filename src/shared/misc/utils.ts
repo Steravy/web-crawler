@@ -4,7 +4,7 @@
 
 import { ElementHandle } from 'puppeteer';
 import { Extractor } from './extractor';
-import { NutritionAndNovaDetails, UrlComposeParams } from './types';
+import { NovaScores, NutritionAndNovaDetails, UrlComposeParams } from './types';
 
 export const extractIdFromUrl = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
@@ -80,23 +80,55 @@ export const extractIngredients = async (
     // console.log(list);
 };
 
+const resolveRelativePath = (nova: NovaScores): string => {
+    let relativePath: string;
+
+    switch (nova) {
+        case NovaScores.ONE:
+            relativePath =
+                '/nova-group/1-alimentos-nao-processados-ou-minimamente-processados';
+            break;
+        case NovaScores.TWO:
+            relativePath = '/nova-group/2-Ingredientes-culinários-processados';
+            break;
+        case NovaScores.TREE:
+            relativePath = '/nova-group/3-Alimentos-processados';
+            break;
+        case NovaScores.FOUR:
+            relativePath = '/nova-group/4-Alimentos-ultra-processados';
+            break;
+        default:
+            throw new Error(
+            `The nova value: ${nova} provided is not valid, please verify and try again.`,
+        );
+    }
+
+    return relativePath;
+};
+
 export const composeUrl = (params: UrlComposeParams): string => {
     const { productId, nutrition, nova } = params;
     const baseUrl = 'https://br.openfoodfacts.org';
+    let url: string;
 
     if (productId) {
-        const url = `${baseUrl}/produto/${productId}`;
+        url = `${baseUrl}/produto/${productId}`;
         console.log(url, 'PRODUCT URL');
         return url;
     }
 
-    const searchParams = new URLSearchParams({
-        ...(nutrition && { nutrition }),
-        ...(nova && { nova }),
-    });
-    if (!searchParams.has('nutrition') || !searchParams.has('nova'))
-        return `${baseUrl}/products`;
-    const composedUrl = `${baseUrl}?${searchParams}`;
-    console.log(composedUrl);
-    return composedUrl;
+    const relativePath = resolveRelativePath(nova);
+    url = `${baseUrl}${relativePath}?nutriscore_score=${nutrition}`;
+    console.log(url, 'FILTERED PRODUCTS URL');
+    return url;
+
+    // const searchParams = new URLSearchParams({
+    //     ...(nutrition && { nutrition }),
+    //     ...(nova && { nova }),
+    // });
+    // if (!searchParams.has('nutrition') || !searchParams.has('nova'))
+    //     return `${baseUrl}/products`;
+    // const composedUrl = `${baseUrl}?${searchParams}`;
+    // console.log(composedUrl);
+    // return composedUrl;
 };

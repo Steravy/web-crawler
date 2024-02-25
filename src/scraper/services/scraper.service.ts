@@ -3,6 +3,7 @@ import { PageService } from '../../page/page.service';
 import { composeUrl } from '../../shared/misc/utils';
 import { HtmlParser } from '../../shared/misc/html-parser';
 import puppeteer from 'puppeteer';
+import { NovaScores, NutritionScores } from '../../shared/misc/types';
 
 @Injectable()
 export class ScraperService {
@@ -10,13 +11,15 @@ export class ScraperService {
 
     constructor(private readonly page: PageService) {}
 
-    async fetchProductListings(nutrition?: string, nova?: string) {
+    async fetchProductListings(nutrition?: NutritionScores, nova?: NovaScores) {
         const url = composeUrl({ nutrition, nova });
         const browser = await puppeteer.launch();
         try {
             const currentPage = await browser.newPage();
             currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
-            await currentPage.goto(url);
+            await currentPage.goto(
+                'https://br.openfoodfacts.org/nova-group/1-alimentos-nao-processados-ou-minimamente-processados?nutriscore_score=A',
+            );
             // const currentPage = await this.page.visit(url);
             Logger.debug(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
