@@ -3,12 +3,18 @@
 */
 
 import { Page } from 'puppeteer';
-import { Logger } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import {
     palmOilHtmlElementSelectors,
+    palmOilPayload,
     PossiblePalmOilContext,
+    veganPayload,
 } from './constants';
-import { PalmOilDetails } from './types';
+import {
+    PalmOilDetails,
+    PossibleVeganContext,
+    TrySelectorsPayload,
+} from './types';
 
 export const extractTitleAndQuantity = async (
     currentPage: Page,
@@ -52,34 +58,59 @@ const isPalmOilFree = (context: string): boolean | string => {
     return result;
 };
 
-const trySelectors = async (currentPage: Page): Promise<PalmOilDetails> => {
-    for (const selector of palmOilHtmlElementSelectors) {
+const trySelectors = async (
+    currentPage: Page,
+    trySelectorsPayload: TrySelectorsPayload,
+): Promise<string> => {
+    const { selectors, errorMessage } = trySelectorsPayload;
+
+    for (const selector of selectors) {
         try {
-            const palmOilText = await currentPage.$eval(selector, (el) =>
+            return await currentPage.$eval(selector, (el) =>
                 el.textContent.trim(),
             );
-            return isPalmOilFree(palmOilText);
+            // return isPalmOilFree(palmOilText);
         } catch (error) {
-            Logger.error(
-                `ERROR SCRAPPING PALM OIL DETAILS WITH SELECTOR: '${selector}'`,
-                error,
-            );
+            Logger.error(`${errorMessage}: '${selector}'`, error);
             // Continue to the next selector if an error occurs
         }
     }
 
-    throw new Error('Failed to scrape information with all selectors.');
+    throw new InternalServerErrorException(
+        {
+            selectors: palmOilHtmlElementSelectors,
+        },
+        'FAILED TO SCRAPE PALM OIL DETAILS WITH ALL SELECTORS!',
+    );
 };
 
 export const resolvePalmOilFree = async (
     currentPage: Page,
 ): Promise<PalmOilDetails> => {
     try {
-        return await trySelectors(currentPage);
+        const palmOilText = await trySelectors(currentPage, palmOilPayload);
+        return isPalmOilFree(palmOilText);
     } catch (error) {
         Logger.error(
             'ERROR SCRAPING PRODUCT PALM OIL DETAILS FROM WEBSITE!',
             error,
         );
+    }
+};
+
+// -----------------------------VEGAN------------------------------------------
+
+const isVegan = (context: string) => {
+    return context === PossibleVeganContext.IS_VEGAN;
+};
+
+export const resolveIfIsVegan = async (currentPage: Page): Promise<boolean> => {
+    try {
+        const veganContext = await trySelectors(currentPage, veganPayload);
+        return isVegan(veganContext);
+    } catch (error) {
+        Logger.error('ERROR SCRAPPING VEGAN DETAILS WITH SELECTORS!', error);
+
+        return false;
     }
 };

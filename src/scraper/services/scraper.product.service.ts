@@ -8,6 +8,7 @@ import { composeUrl } from '../../shared/misc/utils';
 import puppeteer from 'puppeteer';
 import {
     extractTitleAndQuantity,
+    resolveIfIsVegan,
     resolvePalmOilFree,
 } from '../../shared/misc/product-details.utils';
 
@@ -32,7 +33,9 @@ export class ScraperProductService {
 
             const tq = await extractTitleAndQuantity(currentPage);
             const palmOilFree = await resolvePalmOilFree(currentPage);
-            console.log(palmOilFree, 'PALM_OIL');
+            console.log(palmOilFree, 'PAIL OIL');
+            const isVegan = await resolveIfIsVegan(currentPage);
+            console.log(isVegan, 'IS VEGAN');
         } catch (e) {
             console.log('ERROR WHILE SCRAPPING PRODUCT DETAIL', e);
         } finally {

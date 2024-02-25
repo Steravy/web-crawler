@@ -41,3 +41,13 @@ export enum NovaScores {
 }
 
 export type PalmOilDetails = string | boolean;
+
+export interface TrySelectorsPayload {
+    selectors: string[];
+    errorMessage: string;
+}
+
+export enum PossibleVeganContext {
+    IS_VEGAN = 'Vegano',
+    NOT_VEGAN = 'Não vegano',
+}
