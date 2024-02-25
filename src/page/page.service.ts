@@ -14,7 +14,7 @@ export class PageService {
         Logger.debug('INITIALIZING HEADLESS BROWSER', this.LOGGER_LABEL);
         const browser = await this.browser;
         const page = await browser.newPage();
-        Logger.debug('BROWSER INSTANCE LAUCHED', this.LOGGER_LABEL);
+        Logger.debug('BROWSER INSTANCE LAUNCHED', this.LOGGER_LABEL);
         page.setDefaultNavigationTimeout(2 * 60 * 1000);
         // await page.waitForNavigation();
         Logger.debug('ACCESSING THE WEB PAGE', this.LOGGER_LABEL);
@@ -23,7 +23,9 @@ export class PageService {
     }
 
     async closeInstance() {
+        Logger.debug('CLOSING BROWSER INSTANCE', this.LOGGER_LABEL);
         const browser = await this.browser;
         await browser.close();
+        Logger.debug('BROWSER INSTANCE CLOSED', this.LOGGER_LABEL);
     }
 }

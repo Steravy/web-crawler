@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PageService } from '../../page/page.service';
 import { composeUrl } from '../../shared/misc/utils';
 import { HtmlParser } from '../../shared/misc/html-parser';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class ScraperService {
@@ -11,8 +12,12 @@ export class ScraperService {
 
     async fetchProductListings(nutrition?: string, nova?: string) {
         const url = composeUrl({ nutrition, nova });
+        const browser = await puppeteer.launch();
         try {
-            const currentPage = await this.page.visit(url);
+            const currentPage = await browser.newPage();
+            currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
+            await currentPage.goto(url);
+            // const currentPage = await this.page.visit(url);
             Logger.debug(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
                 this.LOGGER_LABEL,
@@ -32,8 +37,8 @@ export class ScraperService {
         } catch (error) {
             console.error('Error: ', error);
         } finally {
-            // if (browser) await browser.close();
-            await this.page.closeInstance();
+            if (browser) await browser.close();
+            // await this.page.closeInstance();
         }
     }
 }

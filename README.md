@@ -94,11 +94,12 @@ In your browser, visit http://localhost:5000/api to open the <a href="https://do
 Open an API testing tool like <a>Postman</a>, <a>JetClient</a> or the good old ```CURL```. I will demonstrate using ```CURL``` in the following code snippets.
 
 
-## <a name="snippets">🕸️ Snippets</a>
+## <a name="snippets">🕸️ Code Snippets</a>
 
 <details>
 <summary><code>Fetch Products</code></summary>
-curl --location 'http://localhost/products?nutrition=A&nova=1'
+
+curl -H "Accept: application/json" 'http://localhost:5000/products?nutrition=A&nova=1' | jq
 
 ```typescript
 
@@ -136,8 +137,9 @@ curl --location 'http://localhost/products?nutrition=A&nova=1'
 <details>
 <summary><code>Product Details</code></summary>
 
+curl -H "Accept: application/json" 'http://localhost:5000/products/3155250349793' | jq
+
 ```typescript
-/** curl --location 'http://localhost/products/3155250349793' */
 
 {
   "title": "Futuro Burger - Fazenda Futuro - 230 g",
