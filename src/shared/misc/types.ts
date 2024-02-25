@@ -39,3 +39,5 @@ export enum NovaScores {
     TREE,
     FOUR,
 }
+
+export type PalmOilDetails = string | boolean;

@@ -5,6 +5,7 @@
 import { ElementHandle } from 'puppeteer';
 import { Extractor } from './extractor';
 import { NovaScores, NutritionAndNovaDetails, UrlComposeParams } from './types';
+import { BadRequestException } from '@nestjs/common';
 
 export const extractIdFromUrl = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
@@ -50,36 +51,6 @@ export const getNutritionAndNovaDetails = async (
     return { nutrition, nova };
 };
 
-export const extractTitleAndQuantity = async (
-    htmlElement: ElementHandle<Element>,
-) => {
-    const titleElement = await htmlElement.$(
-        '#product > div > div > div.card-section > div > div.medium-8.small-12.columns > h2',
-    );
-    const title = await titleElement.evaluate((el) => el.textContent.trim());
-    const quantityElement = await htmlElement.$('#field_quantity_value');
-    const quantity = await quantityElement.evaluate((el) =>
-        el.textContent.trim(),
-    );
-
-    console.log(title, quantity);
-};
-
-export const extractIngredients = async (
-    htmlElement: ElementHandle<Element>,
-) => {
-    const ingredientsPanelElement = await htmlElement.$(
-        '#panel_ingredients_content > div:nth-child(1) > div > div',
-    );
-    // const panel = await htmlElement.$('#panel_ingredients_content');
-    // const hasPalmOil =
-
-    // const list = await ingredientsPanelElement.evaluate((el) =>
-    //     el.innerHTML.trim(),
-    // );
-    // console.log(list);
-};
-
 const resolveRelativePath = (nova: NovaScores): string => {
     let relativePath: string;
 
@@ -98,7 +69,8 @@ const resolveRelativePath = (nova: NovaScores): string => {
             relativePath = '/nova-group/4-Alimentos-ultra-processados';
             break;
         default:
-            throw new Error(
+            throw new BadRequestException(
+            { providedNova: nova, expected: '1, 2, 3 or 4' },
             `The nova value: ${nova} provided is not valid, please verify and try again.`,
         );
     }
@@ -121,14 +93,4 @@ export const composeUrl = (params: UrlComposeParams): string => {
     url = `${baseUrl}${relativePath}?nutriscore_score=${nutrition}`;
     console.log(url, 'FILTERED PRODUCTS URL');
     return url;
-
-    // const searchParams = new URLSearchParams({
-    //     ...(nutrition && { nutrition }),
-    //     ...(nova && { nova }),
-    // });
-    // if (!searchParams.has('nutrition') || !searchParams.has('nova'))
-    //     return `${baseUrl}/products`;
-    // const composedUrl = `${baseUrl}?${searchParams}`;
-    // console.log(composedUrl);
-    // return composedUrl;
 };
