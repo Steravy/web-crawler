@@ -17,9 +17,7 @@ export class ScraperService {
         try {
             const currentPage = await browser.newPage();
             currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
-            await currentPage.goto(
-                'https://br.openfoodfacts.org/nova-group/1-alimentos-nao-processados-ou-minimamente-processados?nutriscore_score=A',
-            );
+            await currentPage.goto(url);
             // const currentPage = await this.page.visit(url);
             Logger.debug(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
