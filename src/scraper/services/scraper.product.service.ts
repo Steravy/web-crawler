@@ -11,8 +11,10 @@ import {
     resolveIfIsVegetarian,
     resolveIngredients,
     resolveNovaScore,
+    resolveNutritionDetails,
     resolveNutritionScore,
     resolvePalmOilFree,
+    resolveServingSize,
 } from '../../shared/misc/product-details.utils';
 
 @Injectable()
@@ -47,6 +49,12 @@ export class ScraperProductService {
             console.log(nova, 'NOVA');
             const nutrition = await resolveNutritionScore(currentPage);
             console.log(nutrition, 'NUTRITION');
+
+            const servingSize = await resolveServingSize(currentPage);
+            console.log(servingSize, 'SERVING SIZE');
+
+            const nutriDetail = await resolveNutritionDetails(currentPage);
+            console.log(nutriDetail, 'NUTRI DETAILS');
         } catch (e) {
             console.log('ERROR WHILE SCRAPPING PRODUCT DETAIL', e);
         } finally {

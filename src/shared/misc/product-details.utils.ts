@@ -212,7 +212,7 @@ export const resolveNovaScore = async (currentPage: Page) => {
 };
 
 export const resolveNutritionScore = async (currentPage: Page) => {
-    let nutritionScore = await currentPage.$eval(
+    const nutritionScore = await currentPage.$eval(
         '#attributes_grid > li:nth-child(1) > a > div > div > div.attr_text > h4',
         (el) => el.textContent.trim(),
     );
@@ -222,7 +222,78 @@ export const resolveNutritionScore = async (currentPage: Page) => {
         (el) => el.textContent.trim(),
     );
 
-    nutritionScore = nutritionScore.charAt(12);
+    const score = nutritionScore.charAt(12);
 
-    return { nutritionScore, nutritionTitle };
+    return { score };
+};
+
+//---------------------------SERVING SIZE --------------------------------------
+export const resolveServingSize = async (currentPage: Page) => {
+    try {
+        const servingSize = await currentPage.$eval(
+            '#panel_serving_size_content > div > div > div',
+            (el) => el.textContent.trim(),
+        );
+
+        return servingSize;
+    } catch (error) {
+        Logger.error(
+            'ERROR SCRAPPING SERVING SIZE DETAILS. NO SELECTOR FOUND.',
+            error,
+        );
+    }
+};
+
+//----------------------------NUTRITIONS DETAILS--------------------------------
+
+const resolveLevel = (context: string) => {
+    if (context.includes('baixa')) return 'low';
+    else if (context.includes('moderada')) return 'moderate';
+    else if (context.includes('elevada')) return 'high';
+};
+
+export const resolveNutritionDetails = async (currentPage: Page) => {
+    const nutritionScore = await resolveNutritionScore(currentPage);
+    const nutritionDetailsHtmlElement = await currentPage.$(
+        '#panel_nutrient_level_fat',
+    );
+    const nutritionDetailsListItemHtmlElement =
+        await nutritionDetailsHtmlElement.$$('li > a > h4');
+
+    console.log(nutritionDetailsListItemHtmlElement, 'NUtrition Details');
+
+    const values = [];
+
+    const fatAndLipids = await currentPage.$eval(
+        '#panel_nutrient_level_fat > li > a > h4',
+        (el) => el.textContent.trim(),
+    );
+    const fatAndLipidsAndAcids = await currentPage.$eval(
+        '#panel_nutrient_level_saturated-fat > li > a > h4',
+        (el) => el.textContent.trim(),
+    );
+    const sugar = await currentPage.$eval(
+        '#panel_nutrient_level_sugars > li > a > h4',
+        (el) => el.textContent.trim(),
+    );
+    const salt = await currentPage.$eval(
+        '#panel_nutrient_level_salt > li > a > h4',
+        (el) => el.textContent.trim(),
+    );
+
+    const nutritionContexts: string[] = [
+        fatAndLipids,
+        fatAndLipidsAndAcids,
+        sugar,
+        salt,
+    ];
+
+    for (const nutritionContext of nutritionContexts) {
+        console.log(nutritionContext, 'NUtrition Details');
+        const level = resolveLevel(nutritionContext);
+
+        values.push([level, nutritionContext]);
+    }
+    nutritionScore['values'] = values;
+    console.log(nutritionScore, 'NUtrition Details');
 };
