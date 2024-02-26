@@ -136,7 +136,7 @@ curl -H "Accept: application/json" 'http://localhost:5000/products?nutrition=A&n
 <details>
 <summary><code>Product Details</code></summary>
 
-curl -H "Accept: application/json" 'http://localhost:5000/products/3155250349793' | jq
+curl -H "Accept: application/json" 'http://localhost:5000/products/7891167011724' | jq
 
 ```typescript
 
