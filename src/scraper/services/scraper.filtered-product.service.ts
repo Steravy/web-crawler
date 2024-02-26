@@ -5,10 +5,10 @@ import puppeteer from 'puppeteer';
 import { NovaScores, NutritionScores } from '../../shared/misc/types';
 
 @Injectable()
-export class ScraperService {
-    private readonly LOGGER_LABEL = ScraperService.name;
+export class ScraperFilteredProductService {
+    private readonly LOGGER_LABEL = ScraperFilteredProductService.name;
 
-    async fetchProductListings(nutrition?: NutritionScores, nova?: NovaScores) {
+    async run(nutrition?: NutritionScores, nova?: NovaScores) {
         const url = composeUrl({ nutrition, nova });
         const browser = await puppeteer.launch();
         Logger.log('BROWSER LAUNCHED', this.LOGGER_LABEL);

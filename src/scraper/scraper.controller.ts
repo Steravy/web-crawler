@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ScraperService } from './services/scraper.service';
+import { ScraperFilteredProductService } from './services/scraper.filtered-product.service';
 import { ScraperProductService } from './services/scraper.product.service';
 import {
     ApiBadRequestResponse,
@@ -17,7 +17,7 @@ import { ProductDetailsDTO } from './dto/product-details.dto';
 @Controller('products')
 export class ScraperController {
     constructor(
-        private readonly scraper: ScraperService,
+        private readonly scrapeProductsWithFilters: ScraperFilteredProductService,
         private readonly productDetailScraper: ScraperProductService,
     ) {}
 
@@ -39,7 +39,7 @@ export class ScraperController {
         @Query('nutrition') nutrition: NutritionScores,
         @Query('nova') nova: NovaScores,
     ) {
-        return this.scraper.fetchProductListings(nutrition, nova);
+        return this.scrapeProductsWithFilters.run(nutrition, nova);
     }
 
     @Get(':id')
