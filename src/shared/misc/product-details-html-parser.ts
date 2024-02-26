@@ -14,9 +14,15 @@ import {
     resolveServingSize,
 } from './product-details.utils';
 import { extractNutritionData } from './nutrition-facts';
+import { Logger } from '@nestjs/common';
 
 export abstract class ProductDetailsHtmlParser {
+    static LOGGER_LABEL = ProductDetailsHtmlParser.name;
     static async execute(currentPage: Page) {
+        Logger.log(
+            'PRODUCT DETAILS HTML ELEMENTS PARSING PROCCESS STARTED!',
+            this.LOGGER_LABEL,
+        );
         const productDetails = {};
         const { title, quantity } = await extractTitleAndQuantity(currentPage);
 
@@ -33,6 +39,8 @@ export abstract class ProductDetailsHtmlParser {
     }
 
     private static async ingredients(currentPage: Page) {
+        Logger.log('EXTRACTING INGREDIENTS!', this.LOGGER_LABEL);
+
         const ingredients = {};
         ingredients['hasPalmOil'] = await resolvePalmOilFree(currentPage);
         ingredients['isVegan'] = await resolveIfIsVegan(currentPage);

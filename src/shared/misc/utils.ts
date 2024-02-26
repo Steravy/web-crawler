@@ -5,7 +5,7 @@
 import { ElementHandle } from 'puppeteer';
 import { Extractor } from './extractor';
 import { NovaScores, NutritionAndNovaDetails, UrlComposeParams } from './types';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 
 export const extractIdFromUrl = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
@@ -79,6 +79,7 @@ const resolveRelativePath = (nova: NovaScores): string => {
 };
 
 export const composeUrl = (params: UrlComposeParams): string => {
+    Logger.log('COMPOSING URL');
     const { productId, nutrition, nova } = params;
     const baseUrl = 'https://br.openfoodfacts.org';
     let url: string;

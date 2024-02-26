@@ -31,7 +31,7 @@ export const extractTitleAndQuantity = async (
             (el) => el.textContent.trim(),
         );
 
-        // const quantity = parseInt(quantityAsString);
+        Logger.log('EXTRACTED TITLE AND QUANTITY FROM HTML ELEMENTS');
 
         return { title, quantity };
     } catch (error) {
@@ -46,13 +46,13 @@ const isPalmOilFree = (context: string): boolean | string => {
     let result: boolean | string;
 
     switch (context) {
-        case PossiblePalmOilContext.UNKNOWN:
-            result = 'unknown';
+    case PossiblePalmOilContext.UNKNOWN:
+        result = 'unknown';
+        break;
+    case PossiblePalmOilContext.WITHOUT:
+        result = false;
             break;
-        case PossiblePalmOilContext.WITHOUT:
-            result = false;
-            break;
-        case PossiblePalmOilContext.MAY_CONTAIN:
+    case PossiblePalmOilContext.MAY_CONTAIN:
             result = true;
             break;
     }
@@ -71,10 +71,8 @@ const trySelectors = async (
             return await currentPage.$eval(selector, (el) =>
                 el.textContent.trim(),
             );
-            // return isPalmOilFree(palmOilText);
         } catch (error) {
             Logger.error(`${errorMessage}: '${selector}'`, error);
-            // Continue to the next selector if an error occurs
         }
     }
 
@@ -91,6 +89,7 @@ export const resolvePalmOilFree = async (
 ): Promise<PalmOilDetails> => {
     try {
         const palmOilText = await trySelectors(currentPage, palmOilPayload);
+        Logger.log('EXTRACTED PALM OIL INFORMATION');
         return isPalmOilFree(palmOilText);
     } catch (error) {
         Logger.error(
@@ -106,15 +105,15 @@ const isVegan = (context: string) => {
     let result: boolean | string;
 
     switch (context) {
-        case PossibleVeganContext.UNKNOWN:
+    case PossibleVeganContext.UNKNOWN:
             result = 'unknown';
-            break;
-        case PossibleVeganContext.NOT_VEGAN:
+        break;
+    case PossibleVeganContext.NOT_VEGAN:
             result = false;
-            break;
-        case PossibleVeganContext.IS_VEGAN:
+        break;
+    case PossibleVeganContext.IS_VEGAN:
             result = true;
-            break;
+        break;
     }
 
     return result;
@@ -125,6 +124,7 @@ export const resolveIfIsVegan = async (
 ): Promise<boolean | string> => {
     try {
         const veganContext = await trySelectors(currentPage, veganPayload);
+        Logger.log('EXTRACTED VEGAN RELATED INFORMATION');
         return isVegan(veganContext);
     } catch (error) {
         Logger.error('ERROR SCRAPPING VEGAN DETAILS WITH SELECTORS!', error);
@@ -139,12 +139,12 @@ const isVegetarian = (context: string) => {
     let result: boolean | string;
 
     switch (context) {
-        case PossibleVegetarianContext.UNKNOWN:
-            result = 'unknown';
+    case PossibleVegetarianContext.UNKNOWN:
+        result = 'unknown';
             break;
-        case PossibleVegetarianContext.IS_VEGETARIAN:
-            result = true;
-            break;
+    case PossibleVegetarianContext.IS_VEGETARIAN:
+        result = true;
+        break;
     }
 
     return result;
@@ -156,6 +156,7 @@ export const resolveIfIsVegetarian = async (currentPage: Page) => {
             currentPage,
             vegetarianPayload,
         );
+        Logger.log('EXTRACTED VEGETARIAN RELATED INFORMATION');
         return isVegetarian(vegetarianContext);
     } catch (error) {
         Logger.error('ERROR SCRAPPING VEGAN DETAILS WITH SELECTORS!', error);
@@ -183,6 +184,8 @@ export const resolveIngredientsList = async (page: Page): Promise<string[]> => {
                     .trim(),
             );
 
+            Logger.log('EXTRACTED INGREDIENT LIST INFORMATION');
+
             return ingredients;
         }
     } catch (error) {
@@ -208,6 +211,8 @@ export const resolveNovaScore = async (currentPage: Page) => {
 
     const score = novaScore.charAt(5);
 
+    Logger.log('EXTRACTED NOVA SCORE INFORMATION');
+
     return { score, title };
 };
 
@@ -230,13 +235,15 @@ export const resolveServingSize = async (currentPage: Page) => {
             (el) => el.textContent.trim(),
         );
 
-        const parsedServigSize = servingSize
+        const parsedServingSize = servingSize
             .split(/\s+/)
             .filter((word) => word !== '')
             .join(' ')
             .split(':');
 
-        return parsedServigSize[1].trim();
+        Logger.log('EXTRACTED SERVING SIZE INFORMATION');
+
+        return parsedServingSize[1].trim();
     } catch (error) {
         Logger.error(
             'ERROR SCRAPPING SERVING SIZE DETAILS. NO SELECTOR FOUND.',
@@ -255,41 +262,46 @@ const resolveLevel = (context: string) => {
 };
 
 export const resolveNutritionDetails = async (currentPage: Page) => {
-    const nutritionScore = await resolveNutritionScore(currentPage);
+    try {
+        const nutritionScore = await resolveNutritionScore(currentPage);
 
-    const values = [];
+        const values = [];
 
-    const fatAndLipids = await currentPage.$eval(
-        '#panel_nutrient_level_fat > li > a > h4',
-        (el) => el.textContent.trim(),
-    );
-    const fatAndLipidsAndAcids = await currentPage.$eval(
-        '#panel_nutrient_level_saturated-fat > li > a > h4',
-        (el) => el.textContent.trim(),
-    );
-    const sugar = await currentPage.$eval(
-        '#panel_nutrient_level_sugars > li > a > h4',
-        (el) => el.textContent.trim(),
-    );
-    const salt = await currentPage.$eval(
-        '#panel_nutrient_level_salt > li > a > h4',
-        (el) => el.textContent.trim(),
-    );
+        const fatAndLipids = await currentPage.$eval(
+            '#panel_nutrient_level_fat > li > a > h4',
+            (el) => el.textContent.trim(),
+        );
+        const fatAndLipidsAndAcids = await currentPage.$eval(
+            '#panel_nutrient_level_saturated-fat > li > a > h4',
+            (el) => el.textContent.trim(),
+        );
+        const sugar = await currentPage.$eval(
+            '#panel_nutrient_level_sugars > li > a > h4',
+            (el) => el.textContent.trim(),
+        );
+        const salt = await currentPage.$eval(
+            '#panel_nutrient_level_salt > li > a > h4',
+            (el) => el.textContent.trim(),
+        );
 
-    const nutritionContexts: string[] = [
-        fatAndLipids,
-        fatAndLipidsAndAcids,
-        sugar,
-        salt,
-    ];
+        const nutritionContexts: string[] = [
+            fatAndLipids,
+            fatAndLipidsAndAcids,
+            sugar,
+            salt,
+        ];
 
-    for (const nutritionContext of nutritionContexts) {
-        console.log(nutritionContext, 'Nutrition Details');
-        const level = resolveLevel(nutritionContext);
+        for (const nutritionContext of nutritionContexts) {
+            const level = resolveLevel(nutritionContext);
 
-        values.push([level, nutritionContext]);
+            values.push([level, nutritionContext]);
+        }
+        nutritionScore['values'] = values;
+
+        Logger.log('EXTRACTED NUTRITION VALUES INFORMATION');
+
+        return nutritionScore;
+    } catch (e) {
+        Logger.error('FAILED TO SCRAPE NUTRITION VALUES INFORMATIONS.');
     }
-    nutritionScore['values'] = values;
-    console.log(nutritionScore, 'Nutrition Details');
-    return nutritionScore;
 };

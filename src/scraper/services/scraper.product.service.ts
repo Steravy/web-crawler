@@ -12,17 +12,17 @@ export class ScraperProductService {
     private readonly LOGGER_LABEL = ScraperProductService.name;
 
     async run(productId: string) {
-        Logger.debug(this.LOGGER_LABEL, productId);
         const url = composeUrl({ productId });
         const browser = await puppeteer.launch();
-        Logger.debug(this.LOGGER_LABEL, 'AFTER');
+        Logger.log('BROWSER LAUNCHED', this.LOGGER_LABEL);
         try {
             const currentPage = await browser.newPage();
             currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
             await currentPage.goto(url);
+            Logger.log('WEB PAGE ACCESSED', this.LOGGER_LABEL);
             await this.assertProductExistence(currentPage, productId);
 
-            Logger.debug(
+            Logger.log(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
                 this.LOGGER_LABEL,
             );
@@ -40,6 +40,7 @@ export class ScraperProductService {
     }
 
     private async assertProductExistence(currentPage: Page, productId: string) {
+        Logger.log('ASSERTING IF PRODUCT EXISTS', this.LOGGER_LABEL);
         const errorElement = await currentPage.$(
             '#main_column > div > div > h1',
         );
@@ -47,5 +48,7 @@ export class ScraperProductService {
             throw new BadRequestException(
                 `Product with ID: ${productId} was not found!`,
             );
+
+        Logger.log('PRODUCT EXISTS RESULT RESOLVED TO TRUE', this.LOGGER_LABEL);
     }
 }

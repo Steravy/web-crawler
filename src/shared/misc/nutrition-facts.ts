@@ -50,7 +50,7 @@ export const extractNutritionData = async (currentPage: Page) => {
 
         hydrateNutriFacts(nutriFactValues);
 
-        console.log(nutriFactValues, 'FACTS');
+        Logger.log('EXTRACTED NUTRITION FACTS INFORMATION');
         return nutriFactValues;
     } catch (error) {
         Logger.error(
