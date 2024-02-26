@@ -32,8 +32,12 @@ export class ScraperProductService {
             console.log(productDetails, 'PRODUCT DETAILS');
             return productDetails;
         } catch (e) {
-            if (e instanceof BadRequestException) throw e; // Rethrow BadRequestException as is
-            console.log('ERROR WHILE SCRAPPING PRODUCT DETAIL', e);
+            if (e instanceof BadRequestException) throw e;
+            Logger.error(
+                'ERROR WHILE SCRAPPING PRODUCT DETAIL',
+                this.LOGGER_LABEL,
+            );
+            console.log(e);
         } finally {
             if (browser) await browser.close();
         }
