@@ -17,6 +17,7 @@ export const palmOilHtmlElementSelectors = [
 export const veganHtmlElementSelectors = [
     '#panel_ingredients_analysis_en-vegan > li > a > h4',
     '#panel_ingredients_analysis_en-non-vegan > li > a',
+    '#panel_ingredients_analysis_en-vegan-status-unknown > li > a',
 ];
 
 export const veganPayload = {
@@ -28,3 +29,13 @@ export const palmOilPayload = {
     selectors: palmOilHtmlElementSelectors,
     errorMessage: 'ERROR SCRAPPING PALM OIL DETAILS WITH SELECTOR',
 } as TrySelectorsPayload;
+
+export const vegetarianPayload = {
+    selectors: [
+        '#panel_ingredients_analysis_en-vegetarian > li > a',
+        '#panel_ingredients_analysis_en-vegetarian-status-unknown > li > a',
+    ],
+    errorMessage: 'ERROR SCRAPPING VEGETARIAN DETAILS WITH SELECTOR',
+};
+
+const ingredientSelector = '#panel_ingredients_content';

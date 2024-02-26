@@ -50,4 +50,10 @@ export interface TrySelectorsPayload {
 export enum PossibleVeganContext {
     IS_VEGAN = 'Vegano',
     NOT_VEGAN = 'Não vegano',
+    UNKNOWN = 'Desconhece-se se é vegano',
+}
+
+export enum PossibleVegetarianContext {
+    UNKNOWN = 'Estado vegetariano desconhecido',
+    IS_VEGETARIAN = 'Vegetariano',
 }

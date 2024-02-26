@@ -9,10 +9,12 @@ import {
     palmOilPayload,
     PossiblePalmOilContext,
     veganPayload,
+    vegetarianPayload,
 } from './constants';
 import {
     PalmOilDetails,
     PossibleVeganContext,
+    PossibleVegetarianContext,
     TrySelectorsPayload,
 } from './types';
 
@@ -101,10 +103,26 @@ export const resolvePalmOilFree = async (
 // -----------------------------VEGAN------------------------------------------
 
 const isVegan = (context: string) => {
-    return context === PossibleVeganContext.IS_VEGAN;
+    let result: boolean | string;
+
+    switch (context) {
+        case PossibleVeganContext.UNKNOWN:
+            result = 'unknown';
+            break;
+        case PossibleVeganContext.NOT_VEGAN:
+            result = false;
+            break;
+        case PossibleVeganContext.IS_VEGAN:
+            result = true;
+            break;
+    }
+
+    return result;
 };
 
-export const resolveIfIsVegan = async (currentPage: Page): Promise<boolean> => {
+export const resolveIfIsVegan = async (
+    currentPage: Page,
+): Promise<boolean | string> => {
     try {
         const veganContext = await trySelectors(currentPage, veganPayload);
         return isVegan(veganContext);
@@ -112,5 +130,62 @@ export const resolveIfIsVegan = async (currentPage: Page): Promise<boolean> => {
         Logger.error('ERROR SCRAPPING VEGAN DETAILS WITH SELECTORS!', error);
 
         return false;
+    }
+};
+
+// ---------------------------------VEGETARIAN---------------------------------
+
+const isVegatarian = (context: string) => {
+    let result: boolean | string;
+
+    switch (context) {
+        case PossibleVegetarianContext.UNKNOWN:
+            result = 'unknown';
+            break;
+        case PossibleVegetarianContext.IS_VEGETARIAN:
+            result = true;
+            break;
+    }
+
+    return result;
+};
+
+export const resolveIfIsVegetarian = async (currentPage: Page) => {
+    try {
+        const vegetarianContext = await trySelectors(
+            currentPage,
+            vegetarianPayload,
+        );
+        return isVegatarian(vegetarianContext);
+    } catch (error) {
+        Logger.error('ERROR SCRAPPING VEGAN DETAILS WITH SELECTORS!', error);
+
+        return false;
+    }
+};
+
+//----------------------------------INGREDIENTS---------------------------------
+
+export const resolveIngredients = async (page: Page): Promise<string[]> => {
+    try {
+        const ingredientsHtmlElementsContent = await page.$eval(
+            '#panel_ingredients_content > div:nth-child(1) > div > div',
+            (element) => element.textContent,
+        );
+
+        if (ingredientsHtmlElementsContent !== null) {
+            const ingredients: string[] = [];
+            ingredients.push(
+                ingredientsHtmlElementsContent
+                    .replace('\n', '')
+                    .trim()
+                    .replace(': ', '')
+                    .trim(),
+            );
+
+            return ingredients;
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
     }
 };
