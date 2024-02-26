@@ -20,18 +20,18 @@ import {
 
 export const extractTitleAndQuantity = async (
     currentPage: Page,
-): Promise<{ title: string; quantity: number }> => {
+): Promise<{ title: string; quantity: string }> => {
     try {
         const title = await currentPage.$eval(
             '#product > div > div > div.card-section > div > div.medium-8.small-12.columns > h2',
             (el) => el.textContent.trim(),
         );
-        const quantityAsString = await currentPage.$eval(
+        const quantity = await currentPage.$eval(
             '#field_quantity_value',
             (el) => el.textContent.trim(),
         );
 
-        const quantity = parseInt(quantityAsString);
+        // const quantity = parseInt(quantityAsString);
 
         return { title, quantity };
     } catch (error) {
@@ -166,7 +166,7 @@ export const resolveIfIsVegetarian = async (currentPage: Page) => {
 
 //----------------------------------INGREDIENTS---------------------------------
 
-export const resolveIngredients = async (page: Page): Promise<string[]> => {
+export const resolveIngredientsList = async (page: Page): Promise<string[]> => {
     try {
         const ingredientsHtmlElementsContent = await page.$eval(
             '#panel_ingredients_content > div:nth-child(1) > div > div',
@@ -196,29 +196,24 @@ export const resolveIngredients = async (page: Page): Promise<string[]> => {
 //-------------------------NOVA----------------------
 
 export const resolveNovaScore = async (currentPage: Page) => {
-    let novaScore = await currentPage.$eval(
+    const novaScore = await currentPage.$eval(
         '#attributes_grid > li:nth-child(2) > a > div > div > div.attr_text > h4',
         (el) => el.textContent.trim(),
     );
 
-    const novaTitle = await currentPage.$eval(
+    const title = await currentPage.$eval(
         '#attributes_grid > li:nth-child(2) > a > div > div > div.attr_text > span',
         (el) => el.textContent.trim(),
     );
 
-    novaScore = novaScore.charAt(5);
+    const score = novaScore.charAt(5);
 
-    return { novaScore, novaTitle };
+    return { score, title };
 };
 
 export const resolveNutritionScore = async (currentPage: Page) => {
     const nutritionScore = await currentPage.$eval(
         '#attributes_grid > li:nth-child(1) > a > div > div > div.attr_text > h4',
-        (el) => el.textContent.trim(),
-    );
-
-    const nutritionTitle = await currentPage.$eval(
-        '#attributes_grid > li:nth-child(1) > a > div > div > div.attr_text > span',
         (el) => el.textContent.trim(),
     );
 
@@ -235,16 +230,23 @@ export const resolveServingSize = async (currentPage: Page) => {
             (el) => el.textContent.trim(),
         );
 
-        return servingSize;
+        const parsedServigSize = servingSize
+            .split(/\s+/)
+            .filter((word) => word !== '')
+            .join(' ')
+            .split(':');
+
+        return parsedServigSize[1].trim();
     } catch (error) {
         Logger.error(
             'ERROR SCRAPPING SERVING SIZE DETAILS. NO SELECTOR FOUND.',
             error,
         );
+        return '?';
     }
 };
 
-//----------------------------NUTRITIONS DETAILS--------------------------------
+//----------------------------NUTRITION'S DETAILS--------------------------------
 
 const resolveLevel = (context: string) => {
     if (context.includes('baixa')) return 'low';
@@ -289,4 +291,5 @@ export const resolveNutritionDetails = async (currentPage: Page) => {
     }
     nutritionScore['values'] = values;
     console.log(nutritionScore, 'Nutrition Details');
+    return nutritionScore;
 };

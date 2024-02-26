@@ -2,22 +2,10 @@
     Created by Stefan Vitoria on 2/23/24
 */
 
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { composeUrl } from '../../shared/misc/utils';
-import puppeteer from 'puppeteer';
-import {
-    extractTitleAndQuantity,
-    resolveIfIsVegan,
-    resolveIfIsVegetarian,
-    resolveIngredients,
-    resolveNovaScore,
-    resolveNutritionDetails,
-    resolveNutritionScore,
-    resolvePalmOilFree,
-    resolveServingSize,
-} from '../../shared/misc/product-details.utils';
-import { extractEnergyFacts } from '../../shared/misc/nutrition-facts';
-import { energyPayload } from '../../shared/misc/constants';
+import puppeteer, { Page } from 'puppeteer';
+import { ProductDetailsHtmlParser } from '../../shared/misc/product-details-html-parser';
 
 @Injectable()
 export class ScraperProductService {
@@ -32,37 +20,32 @@ export class ScraperProductService {
             const currentPage = await browser.newPage();
             currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
             await currentPage.goto(url);
+            await this.assertProductExistence(currentPage, productId);
 
             Logger.debug(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
                 this.LOGGER_LABEL,
             );
 
-            const tq = await extractTitleAndQuantity(currentPage);
-            const palmOilFree = await resolvePalmOilFree(currentPage);
-            console.log(palmOilFree, 'PAIL OIL');
-            const isVegan = await resolveIfIsVegan(currentPage);
-            console.log(isVegan, 'IS VEGAN');
-            const isVegetarian = await resolveIfIsVegetarian(currentPage);
-            console.log(isVegetarian, 'IS Vegetarian');
-            const ingredients = await resolveIngredients(currentPage);
-            console.log(ingredients, 'INGREDIENTS');
-            const nova = await resolveNovaScore(currentPage);
-            console.log(nova, 'NOVA');
-            const nutrition = await resolveNutritionScore(currentPage);
-            console.log(nutrition, 'NUTRITION');
-
-            const servingSize = await resolveServingSize(currentPage);
-            console.log(servingSize, 'SERVING SIZE');
-
-            const nutriDetail = await resolveNutritionDetails(currentPage);
-            console.log(nutriDetail, 'NUTRI DETAILS');
-
-            await extractEnergyFacts(currentPage);
+            const productDetails =
+                await ProductDetailsHtmlParser.execute(currentPage);
+            console.log(productDetails, 'PRODUCT DETAILS');
+            return productDetails;
         } catch (e) {
+            if (e instanceof BadRequestException) throw e; // Rethrow BadRequestException as is
             console.log('ERROR WHILE SCRAPPING PRODUCT DETAIL', e);
         } finally {
             if (browser) await browser.close();
         }
+    }
+
+    private async assertProductExistence(currentPage: Page, productId: string) {
+        const errorElement = await currentPage.$(
+            '#main_column > div > div > h1',
+        );
+        if (errorElement)
+            throw new BadRequestException(
+                `Product with ID: ${productId} was not found!`,
+            );
     }
 }

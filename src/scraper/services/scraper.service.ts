@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PageService } from '../../page/page.service';
 import { composeUrl } from '../../shared/misc/utils';
 import { HtmlParser } from '../../shared/misc/html-parser';
 import puppeteer from 'puppeteer';
@@ -8,8 +7,6 @@ import { NovaScores, NutritionScores } from '../../shared/misc/types';
 @Injectable()
 export class ScraperService {
     private readonly LOGGER_LABEL = ScraperService.name;
-
-    constructor(private readonly page: PageService) {}
 
     async fetchProductListings(nutrition?: NutritionScores, nova?: NovaScores) {
         const url = composeUrl({ nutrition, nova });

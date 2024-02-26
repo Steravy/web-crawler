@@ -21,7 +21,7 @@ const hydrateNutriFacts = (nutriFactValues: any) => {
     });
 };
 
-export const extractEnergyFacts = async (currentPage: Page) => {
+export const extractNutritionData = async (currentPage: Page) => {
     const nutriFactValues = {};
 
     try {
