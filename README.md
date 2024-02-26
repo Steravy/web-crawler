@@ -25,6 +25,7 @@
 3. 🔋 [Features](#features)
 4. 🤸 [Quick Start](#quick-start)
 5. 🕸️ [Snippets](#snippets)
+6. 🕸️ [Challenges](#challenges)
 
 ## <a name="introduction">🤖 Introduction</a>
 This repository contains the source code of an API developed for web scraping on the Open Food Facts website. This API was created as part of the Junior Developer position selection process at <a href="https://devnology.com.br/">Devnology</a>.
@@ -203,4 +204,12 @@ curl -H "Accept: application/json" 'http://localhost:5000/products/3155250349793
 
 </details>
 
-#
+
+## <a name="challenges">🕸️ Challenges</a>
+The first challenge i have met was the factor time, because i get the challenge very close to the deadline, but i knew i could do it, an here it is.
+Another challenge faced was the fact that the Open Food Facts website is not a static website, so i had to use a headless browser to scrape the data and. I used Puppeteer to do this, and it worked very well.
+The pattern of the elements varies from product to product, so i had to create a set of rules to scrape the data from the website. Finding a pattern that would do the job took some time. I believe there is still a lot of work to do, but the deadline have to be respected.
+Scrapping the data from the website was the most challenging part of the project, but i have learned a lot from it. I now know the meaning of the data mining term. Open Food Facts is a very rich website, but the structure and all the indentation layer makes it a little bit hard to scrape the data.
+
+## Author
+[Stefan Vitoria](https://github.com/Steravy)

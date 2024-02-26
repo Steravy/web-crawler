@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ScraperFilteredProductService } from './services/scraper.filtered-product.service';
-import { ScraperProductService } from './services/scraper.product.service';
+import { ScraperProductDetailsService } from './services/scraper.product-details.service';
 import {
     ApiBadRequestResponse,
     ApiInternalServerErrorResponse,
@@ -10,7 +10,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { ProductListingResponse } from './dto/product-listing-response.dto';
-import { NovaScores, NutritionScores } from '../shared/misc/types';
+import { NovaScores, NutritionScores } from './utils/types';
 import { ProductDetailsDTO } from './dto/product-details.dto';
 
 @ApiTags('Scraper')
@@ -18,7 +18,7 @@ import { ProductDetailsDTO } from './dto/product-details.dto';
 export class ScraperController {
     constructor(
         private readonly scrapeProductsWithFilters: ScraperFilteredProductService,
-        private readonly productDetailScraper: ScraperProductService,
+        private readonly productDetailScraper: ScraperProductDetailsService,
     ) {}
 
     @Get()
@@ -29,7 +29,7 @@ export class ScraperController {
         type: [ProductListingResponse],
     })
     @ApiInternalServerErrorResponse({
-        description: 'An unexpected error just happened!',
+        description: 'Some internally process has failed!',
     })
     @ApiBadRequestResponse({
         description:
@@ -49,7 +49,7 @@ export class ScraperController {
         type: ProductDetailsDTO,
     })
     @ApiInternalServerErrorResponse({
-        description: 'An unexpected error just happened!',
+        description: 'Some internally process has failed!',
     })
     @ApiBadRequestResponse({
         description:

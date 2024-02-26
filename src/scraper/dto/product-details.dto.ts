@@ -2,7 +2,7 @@
     Created by Stefan Vitoria on 2/25/24
 */
 import { ApiProperty } from '@nestjs/swagger';
-import { nutritionInfoExample } from '../../shared/misc/constants';
+import { nutritionInfoExample } from '../utils/constants';
 
 export class ProductDetailsDTO {
     @ApiProperty({

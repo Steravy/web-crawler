@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { composeUrl } from '../../shared/misc/utils';
-import { HtmlParser } from '../../shared/misc/html-parser';
+import { composeUrl } from '../utils/utils';
+import { HtmlParser } from '../utils/html-parser';
 import puppeteer from 'puppeteer';
-import { NovaScores, NutritionScores } from '../../shared/misc/types';
+import { NovaScores, NutritionScores } from '../utils/types';
 
 @Injectable()
 export class ScraperFilteredProductService {

@@ -3,7 +3,7 @@
 */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { NovaScores, NutritionScores } from '../../shared/misc/types';
+import { NovaScores, NutritionScores } from '../utils/types';
 
 export class NovaScoreDTO {
     @ApiProperty()

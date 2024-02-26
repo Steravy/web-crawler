@@ -3,13 +3,13 @@
 */
 
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { composeUrl } from '../../shared/misc/utils';
+import { composeUrl } from '../utils/utils';
 import puppeteer, { Page } from 'puppeteer';
-import { ProductDetailsHtmlParser } from '../../shared/misc/product-details-html-parser';
+import { ProductDetailsHtmlParser } from '../utils/product-details-html-parser';
 
 @Injectable()
-export class ScraperProductService {
-    private readonly LOGGER_LABEL = ScraperProductService.name;
+export class ScraperProductDetailsService {
+    private readonly LOGGER_LABEL = ScraperProductDetailsService.name;
 
     async run(productId: string) {
         const url = composeUrl({ productId });
@@ -31,7 +31,7 @@ export class ScraperProductService {
                 await ProductDetailsHtmlParser.execute(currentPage);
             console.log(productDetails, 'PRODUCT DETAILS');
             Logger.log(
-                'PRODUCT INFORMATION SUCCESSFULY SCRAPED AND PROCESSED',
+                'PRODUCT INFORMATION SUCCESSFULLY SCRAPED AND PROCESSED',
                 this.LOGGER_LABEL,
             );
             return productDetails;
