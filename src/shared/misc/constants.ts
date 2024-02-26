@@ -38,4 +38,26 @@ export const vegetarianPayload = {
     errorMessage: 'ERROR SCRAPPING VEGETARIAN DETAILS WITH SELECTOR',
 };
 
-const ingredientSelector = '#panel_ingredients_content';
+export const nutriFactsContexts = [
+    'Energia',
+    'Gorduras/lípidos',
+    'Carboidratos',
+    'Fibra alimentar',
+    'Proteínas',
+    'Sal',
+];
+export const energyPayload = {
+    selectors: [
+        '#panel_nutrition_facts_table_content > div > table > tbody > tr:nth-child(1)',
+    ],
+    errorMessage: 'ERROR SCRAPPING ENERGY DETAILS WITH SELECTOR',
+    label: 'Energy',
+};
+
+export const fatPayload = {
+    selectors: [
+        '#panel_nutrition_facts_table_content > div > table > tbody > tr:nth-child(2)',
+    ],
+    errorMessage: 'ERROR SCRAPING FAT DETAILS WITH SELECTOR',
+    label: 'Gorduras/lípidos',
+};

@@ -254,13 +254,6 @@ const resolveLevel = (context: string) => {
 
 export const resolveNutritionDetails = async (currentPage: Page) => {
     const nutritionScore = await resolveNutritionScore(currentPage);
-    const nutritionDetailsHtmlElement = await currentPage.$(
-        '#panel_nutrient_level_fat',
-    );
-    const nutritionDetailsListItemHtmlElement =
-        await nutritionDetailsHtmlElement.$$('li > a > h4');
-
-    console.log(nutritionDetailsListItemHtmlElement, 'NUtrition Details');
 
     const values = [];
 
@@ -289,11 +282,11 @@ export const resolveNutritionDetails = async (currentPage: Page) => {
     ];
 
     for (const nutritionContext of nutritionContexts) {
-        console.log(nutritionContext, 'NUtrition Details');
+        console.log(nutritionContext, 'Nutrition Details');
         const level = resolveLevel(nutritionContext);
 
         values.push([level, nutritionContext]);
     }
     nutritionScore['values'] = values;
-    console.log(nutritionScore, 'NUtrition Details');
+    console.log(nutritionScore, 'Nutrition Details');
 };

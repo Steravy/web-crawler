@@ -47,6 +47,10 @@ export interface TrySelectorsPayload {
     errorMessage: string;
 }
 
+export interface NutritionFactsPayload extends TrySelectorsPayload {
+    label: string;
+}
+
 export enum PossibleVeganContext {
     IS_VEGAN = 'Vegano',
     NOT_VEGAN = 'Não vegano',

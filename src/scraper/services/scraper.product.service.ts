@@ -16,6 +16,8 @@ import {
     resolvePalmOilFree,
     resolveServingSize,
 } from '../../shared/misc/product-details.utils';
+import { extractEnergyFacts } from '../../shared/misc/nutrition-facts';
+import { energyPayload } from '../../shared/misc/constants';
 
 @Injectable()
 export class ScraperProductService {
@@ -55,6 +57,8 @@ export class ScraperProductService {
 
             const nutriDetail = await resolveNutritionDetails(currentPage);
             console.log(nutriDetail, 'NUTRI DETAILS');
+
+            await extractEnergyFacts(currentPage);
         } catch (e) {
             console.log('ERROR WHILE SCRAPPING PRODUCT DETAIL', e);
         } finally {
