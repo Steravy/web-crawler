@@ -206,10 +206,7 @@ curl -H "Accept: application/json" 'http://localhost:5000/products/3155250349793
 
 
 ## <a name="challenges">🕸️ Challenges</a>
-The first challenge i have met was the factor time, because i get the challenge very close to the deadline, but i knew i could do it, an here it is.
-Another challenge faced was the fact that the Open Food Facts website is not a static website, so i had to use a headless browser to scrape the data and. I used Puppeteer to do this, and it worked very well.
-The pattern of the elements varies from product to product, so i had to create a set of rules to scrape the data from the website. Finding a pattern that would do the job took some time. I believe there is still a lot of work to do, but the deadline have to be respected.
-Scrapping the data from the website was the most challenging part of the project, but i have learned a lot from it. I now know the meaning of the data mining term. Open Food Facts is a very rich website, but the structure and all the indentation layer makes it a little bit hard to scrape the data.
+The first challenge I encountered was the time factor because I received the task very close to the deadline. However, I knew I could overcome it, and here is the result. Another challenge I faced was the dynamic nature of the Open Food Facts website; it is not static. Therefore, I had to use a headless browser to scrape the data. I utilized Puppeteer for this purpose, and it performed exceptionally well. The element patterns vary from product to product, requiring me to establish a set of rules for data scraping. Discovering a pattern that would effectively accomplish the task took some time. While there is still much work to be done, the deadline must be respected. Scraping data from the website proved to be the most challenging aspect of the project, yet it provided significant learning opportunities. I now understand the concept of data mining. Open Food Facts is a comprehensive website, but its complex structure and indentation layers make data scraping a bit challenging.
 
 ## Author
 [Stefan Vitoria](https://github.com/Steravy)
