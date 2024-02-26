@@ -10,16 +10,19 @@ import { BadRequestException, Logger } from '@nestjs/common';
 export const extractIdFromUrl = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
 ): Promise<string> => {
+    Logger.log('EXTRATING ID FROM HTML ELEMENT');
     const productLinkElement = await listItemHtmlElement.$('.list_product_a');
     const url = await productLinkElement.evaluate((el) =>
         el.getAttribute('href'),
     );
+    Logger.log('FINISHING EXTRACTION OF ID FROM HTML ELEMENT');
     return Extractor.productId(url);
 };
 
 export const getNameFormHtmlElement = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
 ): Promise<string> => {
+    Logger.log('EXTRACTING NAME FROM HTML ELEMENT');
     const productNameElement =
         await listItemHtmlElement.$('.list_product_name');
     return productNameElement
@@ -30,6 +33,8 @@ export const getNameFormHtmlElement = async (
 export const getNutritionAndNovaDetails = async (
     listItemHtmlElement: ElementHandle<HTMLElement>,
 ): Promise<NutritionAndNovaDetails> => {
+    Logger.log('EXTRACTING NUTRITION AND NOVA FROM HTML ELEMENT');
+
     const nutriAndNovaScoreElements = await listItemHtmlElement.$$(
         '.list_product_icons',
     );
@@ -37,12 +42,10 @@ export const getNutritionAndNovaDetails = async (
     const nutriScore = await nutriAndNovaScoreElements[0].evaluate((el) =>
         el.getAttribute('title'),
     );
-    // console.log(nutriScore, 'NUTRI');
 
     const novaScore = await nutriAndNovaScoreElements[1].evaluate((el) =>
         el.getAttribute('title'),
     );
-    // console.log(novaScore, 'NOVA');
 
     const nutrition = Extractor.nutriScore(nutriScore);
 

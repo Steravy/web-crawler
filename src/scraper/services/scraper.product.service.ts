@@ -30,6 +30,10 @@ export class ScraperProductService {
             const productDetails =
                 await ProductDetailsHtmlParser.execute(currentPage);
             console.log(productDetails, 'PRODUCT DETAILS');
+            Logger.log(
+                'PRODUCT INFORMATION SUCCESSFULY SCRAPED AND PROCESSED',
+                this.LOGGER_LABEL,
+            );
             return productDetails;
         } catch (e) {
             if (e instanceof BadRequestException) throw e;

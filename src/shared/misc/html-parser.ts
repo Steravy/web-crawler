@@ -16,8 +16,8 @@ export abstract class HtmlParser {
     static async execute(
         htmlElements: ElementHandle<Element>,
     ): Promise<ProductListingDetails[]> {
-        Logger.debug(
-            'HTML PARSING PROCESS INITIALIZED',
+        Logger.log(
+            'INITIALIZING HTML PARSING PROCESS',
             HtmlParser.LOGGER_LABEL,
         );
         const listItemsHtmlElements = await htmlElements.$$('li');
@@ -39,9 +39,8 @@ export abstract class HtmlParser {
                 nova,
             });
         }
-        Logger.debug('HTML PARSING PROCESS FINISHED', HtmlParser.LOGGER_LABEL);
+        Logger.log('HTML PARSING PROCESS FINISHED', HtmlParser.LOGGER_LABEL);
 
-        console.warn(listItemsHtmlElements.length, 'TOTAL');
         return products;
     }
 }

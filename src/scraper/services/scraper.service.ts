@@ -11,12 +11,14 @@ export class ScraperService {
     async fetchProductListings(nutrition?: NutritionScores, nova?: NovaScores) {
         const url = composeUrl({ nutrition, nova });
         const browser = await puppeteer.launch();
+        Logger.log('BROWSER LAUNCHED', this.LOGGER_LABEL);
         try {
             const currentPage = await browser.newPage();
             currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
             await currentPage.goto(url);
+            Logger.log('WEB PAGE ACCESSED', this.LOGGER_LABEL);
             // const currentPage = await this.page.visit(url);
-            Logger.debug(
+            Logger.log(
                 'WEBPAGE WHERE PRODUCT DETAILS WILL BE SCRAPED IS ACCESSIBLE',
                 this.LOGGER_LABEL,
             );
@@ -25,8 +27,10 @@ export class ScraperService {
             await currentPage.waitForSelector(selector, { visible: true });
 
             const elements = await currentPage.$(selector);
-
-            Logger.debug('HTML ELEMENTS FOUND IN THE PAGE', this.LOGGER_LABEL);
+            Logger.log(
+                'SCRAPED PRODUCTS INFORMATIONS WITH GIVEN FILTERS',
+                this.LOGGER_LABEL,
+            );
 
             const products = await HtmlParser.execute(elements);
 
