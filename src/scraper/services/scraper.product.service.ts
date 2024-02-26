@@ -2,7 +2,6 @@
     Created by Stefan Vitoria on 2/23/24
 */
 
-import { PageService } from '../../page/page.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { composeUrl } from '../../shared/misc/utils';
 import puppeteer from 'puppeteer';
@@ -11,6 +10,8 @@ import {
     resolveIfIsVegan,
     resolveIfIsVegetarian,
     resolveIngredients,
+    resolveNovaScore,
+    resolveNutritionScore,
     resolvePalmOilFree,
 } from '../../shared/misc/product-details.utils';
 
@@ -42,9 +43,14 @@ export class ScraperProductService {
             console.log(isVegetarian, 'IS Vegetarian');
             const ingredients = await resolveIngredients(currentPage);
             console.log(ingredients, 'INGREDIENTS');
+            const nova = await resolveNovaScore(currentPage);
+            console.log(nova, 'NOVA');
+            const nutrition = await resolveNutritionScore(currentPage);
+            console.log(nutrition, 'NUTRITION');
         } catch (e) {
             console.log('ERROR WHILE SCRAPPING PRODUCT DETAIL', e);
         } finally {
+            if (browser) await browser.close();
         }
     }
 }

@@ -135,7 +135,7 @@ export const resolveIfIsVegan = async (
 
 // ---------------------------------VEGETARIAN---------------------------------
 
-const isVegatarian = (context: string) => {
+const isVegetarian = (context: string) => {
     let result: boolean | string;
 
     switch (context) {
@@ -156,7 +156,7 @@ export const resolveIfIsVegetarian = async (currentPage: Page) => {
             currentPage,
             vegetarianPayload,
         );
-        return isVegatarian(vegetarianContext);
+        return isVegetarian(vegetarianContext);
     } catch (error) {
         Logger.error('ERROR SCRAPPING VEGAN DETAILS WITH SELECTORS!', error);
 
@@ -186,6 +186,43 @@ export const resolveIngredients = async (page: Page): Promise<string[]> => {
             return ingredients;
         }
     } catch (error) {
-        console.error('Error:', error.message);
+        Logger.error(
+            'ERROR SCRAPPING INGREDIENTS DETAILS WITH SELECTORS!',
+            error,
+        );
     }
+};
+
+//-------------------------NOVA----------------------
+
+export const resolveNovaScore = async (currentPage: Page) => {
+    let novaScore = await currentPage.$eval(
+        '#attributes_grid > li:nth-child(2) > a > div > div > div.attr_text > h4',
+        (el) => el.textContent.trim(),
+    );
+
+    const novaTitle = await currentPage.$eval(
+        '#attributes_grid > li:nth-child(2) > a > div > div > div.attr_text > span',
+        (el) => el.textContent.trim(),
+    );
+
+    novaScore = novaScore.charAt(5);
+
+    return { novaScore, novaTitle };
+};
+
+export const resolveNutritionScore = async (currentPage: Page) => {
+    let nutritionScore = await currentPage.$eval(
+        '#attributes_grid > li:nth-child(1) > a > div > div > div.attr_text > h4',
+        (el) => el.textContent.trim(),
+    );
+
+    const nutritionTitle = await currentPage.$eval(
+        '#attributes_grid > li:nth-child(1) > a > div > div > div.attr_text > span',
+        (el) => el.textContent.trim(),
+    );
+
+    nutritionScore = nutritionScore.charAt(12);
+
+    return { nutritionScore, nutritionTitle };
 };
