@@ -3,9 +3,10 @@
 */
 
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { composeUrl } from '../utils/utils';
 import puppeteer, { Page } from 'puppeteer';
-import { ProductDetailsHtmlParser } from '../utils/product-details-html-parser';
+import { FingerprintInjector, newInjectedPage } from 'fingerprint-injector';
+import { FingerprintGenerator } from 'fingerprint-generator';
+import { response } from 'express';
 
 @Injectable()
 export class LifeMilesService {
@@ -14,11 +15,25 @@ export class LifeMilesService {
     async run() {
         const url =
             'https://oauth.lifemiles.com/login?login_challenge=1c655e2ccf8b4790a3c286abf7dee436';
-        const browser = await puppeteer.launch({headless: false});
         Logger.log('BROWSER LAUNCHED', this.LOGGER_LABEL);
         try {
-            const currentPage = await browser.newPage();
+            const browser = await puppeteer.launch({ headless: false });
+
+            const currentPage = await newInjectedPage(
+                browser,
+                {
+                    // constraints for the generated fingerprint
+                    fingerprintOptions: {
+                        devices: ['mobile'],
+                        operatingSystems: ['ios'],
+                    },
+                },
+            );
+
             currentPage.setDefaultNavigationTimeout(2 * 60 * 1000);
+
+            // await currentPage.setRequestInterception(true);
+
 
             // NAVIGATE TO LOGINPAGE
             await this.navigateToLoginPage(currentPage);
@@ -32,10 +47,9 @@ export class LifeMilesService {
             await currentPage.type('#password', 'PassWord@24', { delay: 100 });
 
             await Promise.all([
-                currentPage.waitForNavigation({ waitUntil: 'load' }),
+                currentPage.waitForNavigation({ waitUntil: 'load' }) as any,
                 currentPage.click('#Login-confirm'),
             ]);
-
 
 
             // currentPage.on('request', (request) => {
@@ -46,6 +60,18 @@ export class LifeMilesService {
             //         console.log(request.url(), 'REQUEST URL');
             //     } else request.continue();
             // });
+
+           await currentPage.on('response', async (data) => {
+                if (
+                    data.url() ===
+                    'https://oauth.lifemiles.com/authentication/token/grant'
+                    && data.request().method() === 'POST'
+                ) {
+                    console.log(data.url(), 'RESPONSE URL');
+                    console.log(await data.json());
+                }
+            });
+
         } catch (e) {
             if (e instanceof BadRequestException) throw e;
             Logger.error(
@@ -53,9 +79,10 @@ export class LifeMilesService {
                 this.LOGGER_LABEL,
             );
             console.log(e);
-        } finally {
-            if (browser) await browser.close();
         }
+        // finally {
+        //     if (browser) await browser.close();
+        // }
     }
 
     private async navigateToLoginPage(currentPage: Page) {
@@ -73,8 +100,10 @@ export class LifeMilesService {
         await currentPage.waitForSelector('#social-Lifemiles', { visible: true });
 
         await Promise.all([
-            currentPage.waitForNavigation({ waitUntil: 'load' }),
+            currentPage.waitForNavigation({ waitUntil: 'load' }) as any,
             currentPage.click('#social-Lifemiles'),
         ]);
     }
+
+
 }
