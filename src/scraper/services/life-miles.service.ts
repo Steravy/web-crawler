@@ -61,11 +61,11 @@ export class LifeMilesService {
             //     } else request.continue();
             // });
 
-           await currentPage.on('response', async (data) => {
+            await currentPage.on('response', async (data) => {
                 if (
                     data.url() ===
-                    'https://oauth.lifemiles.com/authentication/token/grant'
-                    && data.request().method() === 'POST'
+                        'https://oauth.lifemiles.com/authentication/token/grant' &&
+                    data.request().method() === 'POST'
                 ) {
                     console.log(data.url(), 'RESPONSE URL');
                     console.log(await data.json());
